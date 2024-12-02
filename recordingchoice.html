@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聴覚障碍者に向けた会話補助アプリ</title>
+    <link rel="stylesheet" href="css/record.css">
+</head>
+<body>
+    <header>
+        <h1>聴覚障碍者に向けた会話補助アプリ</h1>
+    </header>
+
+    <main>
+        <h2>録音から文字起こし</h2>
+        <!-- ファイルアップロードセクション -->
+        <section class="upload-section">
+            <input type="file" id="file-upload" accept="audio/*, video/*">
+            <button id="start-transcription" disabled>文字起こし開始</button>
+            <p id="upload-status">アップロードされたファイルはありません。</p>
+        </section>
+
+    </main>
+
+    <!-- スクリプトファイルの読み込み -->
+    <script src="file.js"></script>
+
+    <footer>
+        <p><a href="choice.html">TOPページへ➔</a></p>
+    </footer>
+</body>
+</html>
