@@ -1,52 +1,59 @@
 const startBtn = document.getElementById('play-transcription');
 const stopBtn = document.getElementById('stop-transcription');
 const resultText = document.getElementById('transcription');
-let recognition;
-let isRecognizing = false;
+let mediaRecorder;
+let audioChunks = [];
 
-if ('webkitSpeechRecognition' in window) {
-    recognition = new webkitSpeechRecognition();
-} else if ('SpeechRecognition' in window) {
-    recognition = new SpeechRecognition();
-} else {
-    alert('このブラウザは音声認識をサポートしていません');
-}
-
-recognition.lang = 'ja-JP';
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
-
-startBtn.onclick = function() {
-    if (!isRecognizing) {
-        recognition.start();
-        isRecognizing = true;
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        resultText.value = '';
+startBtn.onclick = async function () {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('このブラウザは音声録音をサポートしていません');
+        return;
     }
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioBase64 = await blobToBase64(audioBlob);
+        const data = await sendAudioToServer(audioBase64);
+        displayTranscription(data);
+        audioChunks = [];
+    };
+
+    mediaRecorder.start();
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
 };
 
-stopBtn.onclick = function() {
-    if (isRecognizing) {
-        recognition.stop();
-        isRecognizing = false;
+stopBtn.onclick = function () {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
         startBtn.disabled = false;
         stopBtn.disabled = true;
     }
 };
 
-recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    sendAudioToServer(transcript).then(data => displayTranscription(data));
-};
+async function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
 
-async function sendAudioToServer(transcript) {
-    const response = await fetch('https://peaceful-tide-429307-m0.an.r.appspot.com//api/identify-speaker', {
+async function sendAudioToServer(audioBase64) {
+    const response = await fetch('https://peaceful-tide-429307-m0.an.r.appspot.com/api/identify-speaker', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ audio: transcript })
+        body: JSON.stringify({ audio: audioBase64 })
     });
     const data = await response.json();
     return data;
