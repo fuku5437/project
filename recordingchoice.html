@@ -5,6 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>聴覚障碍者に向けた会話補助アプリ</title>
     <link rel="stylesheet" href="css/record.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        header h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        main {
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .upload-section {
+            margin-bottom: 20px;
+        }
+
+        #transcription-box {
+            width: 100%;
+            height: 150px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        #file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -20,6 +71,19 @@
             <p id="upload-status">アップロードされたファイルはありません。</p>
         </section>
 
+        <!-- 文字起こし結果を表示するボックス -->
+        <section class="transcription-section">
+            <h3>文字起こし結果</h3>
+            <div id="transcription-box">
+                <p>ここに文字起こし結果が表示されます。</p>
+            </div>
+        </section>
+
+        <!-- 保存された文字起こしのリスト -->
+        <section class="saved-transcriptions-section">
+            <h3>保存された文字起こし</h3>
+            <ul id="file-list"></ul>
+        </section>
     </main>
 
     <!-- スクリプトファイルの読み込み -->
