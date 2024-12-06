@@ -9,24 +9,28 @@ window.onload = function () {
 
     // ファイルが選択されたときにイベント発火
     fileInput.addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            statusText.textContent = `ファイル名: ${file.name}`;
-            startBtn.disabled = false; // ボタンを有効化
-            const reader = new FileReader();
+    const file = event.target.files[0];
+    if (file) {
+        statusText.textContent = `ファイル名: ${file.name}`;
+        startBtn.disabled = false; // ボタンを有効化
 
-            reader.onload = function (event) {
-                audioBlob = new Blob([event.target.result], { type: file.type });
-            };
+        // FileReaderのインスタンスを定義
+        const reader = new FileReader();
 
-            reader.onerror = function (error) {
-                console.error("ファイル読み込み中にエラーが発生しました:", error);
-                statusText.textContent = 'ファイルの読み込みに失敗しました';
-            };
+        reader.onload = function (event) {
+            audioBlob = new Blob([event.target.result], { type: file.type });
+        };
 
-            reader.readAsArrayBuffer(file);
-        }
-    });
+        reader.onerror = function (error) {
+            console.error("ファイル読み込み中にエラーが発生しました:", error);
+            statusText.textContent = 'ファイルの読み込みに失敗しました';
+        };
+
+        // ファイルを読み込む
+        reader.readAsArrayBuffer(file);
+    }
+});
+
 
     // 音声ファイルをAPIに送信して文字起こし
     startBtn.onclick = function () {
